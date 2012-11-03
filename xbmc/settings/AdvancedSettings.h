@@ -137,6 +137,8 @@ class CAdvancedSettings
     std::vector<RefreshVideoLatency> m_videoRefreshLatency;
     float m_videoDefaultLatency;
     bool m_videoHideWatchedRecentlyAddedEpisodesNav;
+    bool m_videoHideWatchedRecentlyAddedMoviesNav;
+    bool m_videoHideWatchedRecentlyAddedMusicVideosNav;
     bool m_videoDisableBackgroundDeinterlace;
     int  m_videoCaptureUseOcclusionQuery;
     bool m_DXVACheckCompatibility;

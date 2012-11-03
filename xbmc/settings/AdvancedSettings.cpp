@@ -103,6 +103,8 @@ void CAdvancedSettings::Initialize()
   m_videoFpsDetect = 1;
   m_videoDefaultLatency = 0.0;
   m_videoHideWatchedRecentlyAddedEpisodesNav = false;
+  m_videoHideWatchedRecentlyAddedMoviesNav = false;
+  m_videoHideWatchedRecentlyAddedMusicVideosNav = false;
 
   m_musicUseTimeSeeking = true;
   m_musicTimeSeekForward = 10;
@@ -677,6 +679,10 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   // hide watched from the recently added in the nav menu
   XMLUtils::GetBoolean(pRootElement, "hidewatchedrecentlyaddedepisodesnav", m_videoHideWatchedRecentlyAddedEpisodesNav);
   CLog::Log(LOGDEBUG, "hide watched recently added episodesnav: %s", m_videoHideWatchedRecentlyAddedEpisodesNav ? "true" : "false");
+  XMLUtils::GetBoolean(pRootElement, "hidewatchedrecentlyaddedmoviesnav", m_videoHideWatchedRecentlyAddedMoviesNav);
+  CLog::Log(LOGDEBUG, "hide watched recently added moviesnav: %s", m_videoHideWatchedRecentlyAddedMoviesNav ? "true" : "false");
+  XMLUtils::GetBoolean(pRootElement, "hidewatchedrecentlyaddedmusicvideosnav", m_videoHideWatchedRecentlyAddedMusicVideosNav);
+  CLog::Log(LOGDEBUG, "hide watched recently added episodesnav: %s", m_videoHideWatchedRecentlyAddedMusicVideosNav ? "true" : "false");
 
   pElement = pRootElement->FirstChildElement("loglevel");
   if (pElement)

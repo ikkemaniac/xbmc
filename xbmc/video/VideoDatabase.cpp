@@ -5141,7 +5141,12 @@ bool CVideoDatabase::GetMusicVideosNav(const CStdString& strBaseDir, CFileItemLi
 
 bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
-  CStdString order = PrepareSQL("order by idMovie desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  CStdString where = "";
+  if(g_advancedSettings.m_videoHideWatchedRecentlyAddedMoviesNav)
+  {
+    where = "WHERE (playCount < 1 or playCount isNull) ";
+  }
+  where += PrepareSQL("order by idMovie desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMoviesByWhere(strBaseDir, "", order, items);
 }
 
@@ -5158,7 +5163,12 @@ bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, C
 
 bool CVideoDatabase::GetRecentlyAddedMusicVideosNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
-  CStdString where = PrepareSQL("order by idMVideo desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  CStdString where = "";
+  if(g_advancedSettings.m_videoHideWatchedRecentlyAddedMusicVideosNav)
+  {
+    where = "WHERE (playCount < 1 or playCount isNull) ";
+  }
+  where += PrepareSQL("order by idMVideo desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMusicVideosByWhere(strBaseDir, where, items);
 }
 
