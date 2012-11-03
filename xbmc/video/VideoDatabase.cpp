@@ -6340,6 +6340,10 @@ bool CVideoDatabase::GetMusicVideosNav(const CStdString& strBaseDir, CFileItemLi
 bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   Filter filter;
+  if (g_advancedSettings.m_videoHideWatchedRecentlyAddedMoviesNav)
+  {
+    filter.where = "playCount isNull OR playCount < 1";
+  }
   filter.order = "dateAdded desc, idMovie desc";
   filter.limit = PrepareSQL("%u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMoviesByWhere(strBaseDir, filter, items);
@@ -6360,6 +6364,10 @@ bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, C
 bool CVideoDatabase::GetRecentlyAddedMusicVideosNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   Filter filter;
+  if (g_advancedSettings.m_videoHideWatchedRecentlyAddedMusicVideosNav)
+  {
+    filter.where = "playCount isNull OR playCount < 1";
+  }
   filter.order = "dateAdded desc, idMVideo desc";
   filter.limit = PrepareSQL("%u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
   return GetMusicVideosByWhere(strBaseDir, filter, items);
