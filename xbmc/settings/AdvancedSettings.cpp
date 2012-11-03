@@ -682,7 +682,7 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
   XMLUtils::GetBoolean(pRootElement, "hidewatchedrecentlyaddedmoviesnav", m_videoHideWatchedRecentlyAddedMoviesNav);
   CLog::Log(LOGDEBUG, "hide watched recently added moviesnav: %s", m_videoHideWatchedRecentlyAddedMoviesNav ? "true" : "false");
   XMLUtils::GetBoolean(pRootElement, "hidewatchedrecentlyaddedmusicvideosnav", m_videoHideWatchedRecentlyAddedMusicVideosNav);
-  CLog::Log(LOGDEBUG, "hide watched recently added episodesnav: %s", m_videoHideWatchedRecentlyAddedMusicVideosNav ? "true" : "false");
+  CLog::Log(LOGDEBUG, "hide watched recently added musicvideosnav: %s", m_videoHideWatchedRecentlyAddedMusicVideosNav ? "true" : "false");
 
   pElement = pRootElement->FirstChildElement("loglevel");
   if (pElement)
