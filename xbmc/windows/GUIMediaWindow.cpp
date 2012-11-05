@@ -1373,6 +1373,9 @@ void CGUIMediaWindow::SetHistoryForPath(const CStdString& strDirectory)
 // This function is called by OnClick()
 bool CGUIMediaWindow::OnPlayMedia(int iItem)
 {
+  // check for previous episodes
+  // select * from episodeview where c12 < 2 and c13 < 9 and idShow = 2 and (playCount < 1 or playCount isNull)
+
   // Reset Playlistplayer, playback started now does
   // not use the playlistplayer.
   g_playlistPlayer.Reset();

@@ -6352,7 +6352,7 @@ bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFi
 bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   Filter filter;
-  if (g_advancedSettings.m_videoHideWatchedRecentlyAddedEpisodesNav)
+  if (g_guiSettings.GetBool("videolibrary.hidewatchedrecentlyadded"))
   {
     filter.where = "playCount isNull OR playCount < 1";
   }

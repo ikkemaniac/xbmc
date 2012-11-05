@@ -9068,6 +9068,10 @@ msgctxt "#20403"
 msgid "Set actor thumb"
 msgstr ""
 
+msgctxt "#20404"
+msgid "Hide watched episodes in recently added"
+msgstr ""
+
 #empty string with id 20404
 
 msgctxt "#20405"
