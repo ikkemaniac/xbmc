@@ -5146,8 +5146,9 @@ bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFi
   {
     where = "WHERE (playCount < 1 or playCount isNull) ";
   }
-  where += PrepareSQL("order by idMovie desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
-  return GetMoviesByWhere(strBaseDir, "", order, items);
+  
+  CStdString order = PrepareSQL("order by idMovie desc limit %u", limit ? limit : g_advancedSettings.m_iVideoLibraryRecentlyAddedItems);
+  return GetMoviesByWhere(strBaseDir, where, order, items, false);
 }
 
 bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
