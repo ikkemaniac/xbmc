@@ -5142,7 +5142,7 @@ bool CVideoDatabase::GetMusicVideosNav(const CStdString& strBaseDir, CFileItemLi
 bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   CStdString where = "";
-  if(g_advancedSettings.m_videoHideWatchedRecentlyAddedMoviesNav)
+  if(g_guiSettings.GetBool("videolibrary.hidewatchedrecentlyadded"))
   {
     where = "WHERE (playCount < 1 or playCount isNull) ";
   }
@@ -5154,7 +5154,7 @@ bool CVideoDatabase::GetRecentlyAddedMoviesNav(const CStdString& strBaseDir, CFi
 bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   CStdString where = "";
-  if(g_advancedSettings.m_videoHideWatchedRecentlyAddedEpisodesNav)
+  if(g_guiSettings.GetBool("videolibrary.hidewatchedrecentlyadded"))
   {
     where = "WHERE (playCount < 1 or playCount isNull) ";
   }
@@ -5165,7 +5165,7 @@ bool CVideoDatabase::GetRecentlyAddedEpisodesNav(const CStdString& strBaseDir, C
 bool CVideoDatabase::GetRecentlyAddedMusicVideosNav(const CStdString& strBaseDir, CFileItemList& items, unsigned int limit)
 {
   CStdString where = "";
-  if(g_advancedSettings.m_videoHideWatchedRecentlyAddedMusicVideosNav)
+  if(g_guiSettings.GetBool("videolibrary.hidewatchedrecentlyadded"))
   {
     where = "WHERE (playCount < 1 or playCount isNull) ";
   }
