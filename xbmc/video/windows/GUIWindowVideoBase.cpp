@@ -1342,6 +1342,8 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   g_playlistPlayer.Reset();
   g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_NONE);
 
+  CLog::Log(LOGDEBUG, "bb 1 %s %s", __FUNCTION__, pItem->GetPath().c_str());
+
   CFileItem item(*pItem);
   if (pItem->IsVideoDb())
   {

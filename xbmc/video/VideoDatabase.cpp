@@ -371,6 +371,7 @@ void CVideoDatabase::CreateViews()
 //********************************************************************************************************************************
 int CVideoDatabase::GetPathId(const CStdString& strPath)
 {
+  CLog::Log(LOGDEBUG, "%s : strPath = %s", __FUNCTION__, strPath.c_str());
   CStdString strSQL;
   try
   {
@@ -384,7 +385,12 @@ int CVideoDatabase::GetPathId(const CStdString& strPath)
 
     URIUtils::AddSlashAtEnd(strPath1);
 
+    CLog::Log(LOGDEBUG, "%s : strPath1 = %s", __FUNCTION__, strPath1.c_str());
+
     strSQL=PrepareSQL("select idPath from path where strPath like '%s'",strPath1.c_str());
+
+    CLog::Log(LOGDEBUG, "%s : strSQL = %s", __FUNCTION__, strSQL.c_str());
+
     m_pDS->query(strSQL.c_str());
     if (!m_pDS->eof())
       idPath = m_pDS->fv("path.idPath").get_asInt();
@@ -2235,6 +2241,8 @@ void CVideoDatabase::AddBookMarkToFile(const CStdString& strFilenameAndPath, con
     else
       strSQL=PrepareSQL("insert into bookmark (idBookmark, idFile, timeInSeconds, totalTimeInSeconds, thumbNailImage, player, playerState, type) values(NULL,%i,%f,%f,'%s','%s','%s', %i)", idFile, bookmark.timeInSeconds, bookmark.totalTimeInSeconds, bookmark.thumbNailImage.c_str(), bookmark.player.c_str(), bookmark.playerState.c_str(), (int)type);
 
+    CLog::Log(LOGDEBUG, "%s : strSQL = %s", __FUNCTION__, strSQL.c_str());
+    
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
@@ -2346,6 +2354,7 @@ void CVideoDatabase::AddBookMarkForEpisode(const CVideoInfoTag& tag, const CBook
     AddBookMarkToFile(tag.m_strFileNameAndPath, bookmark, CBookmark::EPISODE);
     int idBookmark = (int)m_pDS->lastinsertid();
     strSQL = PrepareSQL("update episode set c%02d=%i where c%02d=%i and c%02d=%i and idFile=%i", VIDEODB_ID_EPISODE_BOOKMARK, idBookmark, VIDEODB_ID_EPISODE_SEASON, tag.m_iSeason, VIDEODB_ID_EPISODE_EPISODE, tag.m_iEpisode, idFile);
+    CLog::Log(LOGDEBUG, "%s : strSQL == %s", __FUNCTION__, strSQL.c_str());
     m_pDS->exec(strSQL.c_str());
   }
   catch (...)
