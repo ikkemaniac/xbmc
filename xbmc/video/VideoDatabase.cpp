@@ -2991,6 +2991,50 @@ void CVideoDatabase::GetCommonDetails(auto_ptr<Dataset> &pDS, CVideoInfoTag &det
   details.m_lastPlayed = pDS->fv(VIDEODB_DETAILS_LASTPLAYED).get_asString();
 }
 
+// Get tvshow's previously broadcasted unwatched episodes
+void CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
+{
+    /*
+    CStdString strSQL = PrepareSQL("select tvshowlinkepisode.* 
+                        from tvshowlinkepisode 
+                        JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode  
+                        JOIN files ON episode.idFile = files.idFile 
+                        where tvshowlinkepisode.idShow = %i 
+                        and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) 
+                        and (playCount <1 or playCount isNull) 
+                        order by CAST (episode.c%02d as INT) desc, CAST (episode.c%02d as INT) desc 
+                        limit 2",
+                        pItem->GetVideoInfoTag()->m_iIdShow,
+                        VIDEODB_ID_EPISODE_SEASON,
+                        pItem->GetVideoInfoTag()->m_iSeason,
+                        VIDEODB_ID_EPISODE_SEASON,
+                        pItem->GetVideoInfoTag()->m_iSeason,
+                        VIDEODB_ID_EPISODE_EPISODE,
+                        pItem->GetVideoInfoTag()->m_iEpisode,
+                        VIDEODB_ID_EPISODE_SEASON,
+                        VIDEODB_ID_EPISODE_EPISODE);
+                        */
+    // select unwatched
+    // filter on older seasons, this season but with older episodes, not played yet
+    CStdString strSQL = PrepareSQL("select tvshowlinkepisode.* from tvshowlinkepisode JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode JOIN files ON episode.idFile = files.idFile where tvshowlinkepisode.idShow = %i and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) and (playCount <1 or playCount isNull) order by CAST (episode.c%02d as INT) desc, CAST (episode.c%02d as INT) desc limit 2", pItem->GetVideoInfoTag()->m_iIdShow, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode, VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
+
+    CLog::Log(LOGDEBUG, "%s strSQL: %s", __FUNCTION__, strSQL.c_str());
+
+    // execute query
+    m_pDS->query(strSQL.c_str());
+    // if there are rows returned
+    if (!m_pDS->eof())
+    {
+        CLog::Log(LOGDEBUG, "%s niet bekeken afleveringen gevonden", __FUNCTION__);
+
+    //no rows returned
+    } else {
+        CLog::Log(LOGDEBUG, "%s alle voorgaande afleveringen zijn bekeken", __FUNCTION__);
+    }
+    //close dataset
+    m_pDS->close();
+}
+
 /// \brief GetVideoSettings() obtains any saved video settings for the current file.
 /// \retval Returns true if the settings exist, false otherwise.
 bool CVideoDatabase::GetVideoSettings(const CStdString &strFilenameAndPath, CVideoSettings &settings)

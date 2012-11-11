@@ -50,6 +50,7 @@ class CGUIDialogProgress;
 #endif
 
 typedef std::vector<CVideoInfoTag> VECMOVIES;
+typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 
 namespace VIDEO
 {
@@ -609,6 +610,8 @@ public:
       break;
     }
   }
+
+  void GetPreviousEpisodeNotWatched(CFileItemPtr& pItem);
 
 protected:
   int GetMovieId(const CStdString& strFilenameAndPath);
