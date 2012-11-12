@@ -611,7 +611,7 @@ public:
     }
   }
 
-  void GetPreviousEpisodeNotWatched(CFileItemPtr& pItem);
+  CFileItem GetPreviousEpisodeNotWatched(CFileItemPtr& pItem);
 
 protected:
   int GetMovieId(const CStdString& strFilenameAndPath);

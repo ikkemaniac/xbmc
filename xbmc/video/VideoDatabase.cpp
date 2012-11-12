@@ -2999,18 +2999,19 @@ void CVideoDatabase::GetCommonDetails(auto_ptr<Dataset> &pDS, CVideoInfoTag &det
 }
 
 // Get tvshow's previously broadcasted unwatched episodes
-void CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
+CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
 {
     /*
-    CStdString strSQL = PrepareSQL("select tvshowlinkepisode.* 
+    CStdString strSQL = PrepareSQL("select episode.c%02d, tvshowlinkepisode.*
                         from tvshowlinkepisode 
                         JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode  
                         JOIN files ON episode.idFile = files.idFile 
                         where tvshowlinkepisode.idShow = %i 
                         and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) 
                         and (playCount <1 or playCount isNull) 
-                        order by CAST (episode.c%02d as INT) desc, CAST (episode.c%02d as INT) desc 
-                        limit 2",
+                        order by CAST (episode.c%02d as INT) asc, CAST (episode.c%02d as INT) asc
+                        limit 1",
+                        VIDEODB_ID_EPISODE_BASEPATH,
                         pItem->GetVideoInfoTag()->m_iIdShow,
                         VIDEODB_ID_EPISODE_SEASON,
                         pItem->GetVideoInfoTag()->m_iSeason,
@@ -3024,23 +3025,31 @@ void CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
     // select unwatched
     // filter on older seasons, this season but with older episodes, not played yet
     // need to cast as INT because the column type is VARCHAR... why? column is defined as INT in 'SDbTableOffsets DbEpisodeOffsets'
-    CStdString strSQL = PrepareSQL("select tvshowlinkepisode.* from tvshowlinkepisode JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode JOIN files ON episode.idFile = files.idFile where tvshowlinkepisode.idShow = %i and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) and (playCount <1 or playCount isNull) order by CAST (episode.c%02d as INT) desc, CAST (episode.c%02d as INT) desc limit 2", pItem->GetVideoInfoTag()->m_iIdShow, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode, VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
+    CStdString strSQL = PrepareSQL("select episode.c%02d, tvshowlinkepisode.* from tvshowlinkepisode JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode JOIN files ON episode.idFile = files.idFile where tvshowlinkepisode.idShow = %i and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) and (playCount <1 or playCount isNull) order by CAST (episode.c%02d as INT) asc, CAST (episode.c%02d as INT) asc limit 1", VIDEODB_ID_EPISODE_BASEPATH, pItem->GetVideoInfoTag()->m_iIdShow, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode, VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
 
     CLog::Log(LOGDEBUG, "%s strSQL: %s", __FUNCTION__, strSQL.c_str());
 
     // execute query
     m_pDS->query(strSQL.c_str());
+    CStdString strPath = "";
     // if there are rows returned
     if (!m_pDS->eof())
     {
-        CLog::Log(LOGDEBUG, "%s niet bekeken afleveringen gevonden", __FUNCTION__);
+        strPath = m_pDS->fv(PrepareSQL("episode.c%02d",VIDEODB_ID_EPISODE_BASEPATH)).get_asString();
+        CLog::Log(LOGDEBUG, "%s : First unseen episode = %s", __FUNCTION__, strPath.c_str());
 
     //no rows returned
     } else {
-        CLog::Log(LOGDEBUG, "%s alle voorgaande afleveringen zijn bekeken", __FUNCTION__);
+        CLog::Log(LOGDEBUG, "%s : All previous episodes are watched", __FUNCTION__);
+        //strPath = "";
     }
     //close dataset
     m_pDS->close();
+    
+    bool bIsFolder = false;
+    CFileItem item(strPath, bIsFolder);
+
+    return item;
 }
 
 /// \brief GetVideoSettings() obtains any saved video settings for the current file.

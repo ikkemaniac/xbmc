@@ -1342,43 +1342,33 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   g_playlistPlayer.Reset();
   g_playlistPlayer.SetCurrentPlaylist(PLAYLIST_NONE);
 
-  CLog::Log(LOGDEBUG, "bb 1 %s %s", __FUNCTION__, pItem->GetPath().c_str());
-
   CFileItem item(*pItem);
   if (pItem->IsVideoDb())
   {
     item.SetPath(pItem->GetVideoInfoTag()->m_strFileNameAndPath);
     item.SetProperty("original_listitem_url", pItem->GetPath());
   }
-  CLog::Log(LOGDEBUG, "bb 2 %s %s", __FUNCTION__, item.GetPath().c_str());
 
   //look for unwatched episodes before starting to watch this one
   CFileItemList items;
   CVideoDatabase db;
   // open db connection
   db.Open();
-  // get not watched episodes
-  //TODO: make void return oldest 'not watched' episode
-  db.GetPreviousEpisodeNotWatched(pItem);
 
-/*
-  int tvshowid= 0; int season =0; int episode =0;
-  CStdString whereOrder = "";
-  tvshowid = db.GetTvShowId(pItem->GetPath().c_str());
-  tvshowid = pItem->GetVideoInfoTag()->m_iIdShow;
-  season = pItem->GetVideoInfoTag()->m_iSeason;
-  episode = pItem->GetVideoInfoTag()->m_iEpisode;
-  success = db.GetTvShowsByWhere("videodb://2/2/", whereOrder, items);
-  items.SetContent("tvshows");
-  CLog::Log(LOGDEBUG, "bb 3 tvshow id  %i", tvshowid);
-*/
+  // get not watched episodes
+  CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
+
   //close db
   db.Close();
 
   //play item
-  //TODO: still to make sure the unwatched episode is selected
-  PlayMovie(&item);
-
+  //TODO: make option to ask user for confirmation, add on/off option to settings menu
+  if(!nItem.GetPath().IsEmpty())
+  {
+      PlayMovie(&nItem);
+  } else {
+      PlayMovie(&item);
+  }
   return true;
 }
 
