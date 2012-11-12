@@ -548,6 +548,7 @@ void CGUISettings::Initialize()
   AddBool(NULL, "videolibrary.seasonthumbs", 20382, true);
   AddBool(vdl, "videolibrary.actorthumbs", 20402, true);
   AddBool(vdl, "videolibrary.hidewatchedrecentlyadded", 20404, true);
+  AddBool(vdl, "videolibrary.checkpreviousepisodenotwatched", 20459, true);
 
   map<int, int> flattenTVShowOptions;
   flattenTVShowOptions.insert(make_pair(20420, 0));

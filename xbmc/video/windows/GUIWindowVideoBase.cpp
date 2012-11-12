@@ -1355,20 +1355,25 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
   // open db connection
   db.Open();
 
-  // get not watched episodes
-  CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
-
-  //close db
-  db.Close();
-
-  //play item
-  //TODO: make option to ask user for confirmation, add on/off option to settings menu
-  if(!nItem.GetPath().IsEmpty())
+  if(g_guiSettings.GetBool("videolibrary.checkpreviousepisodenotwatched"))
   {
-      PlayMovie(&nItem);
-  } else {
-      PlayMovie(&item);
+    // get not watched episodes
+    CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
+
+    //close db
+    db.Close();
+
+    //play item
+    //TODO: make option to ask user for confirmation
+    if(!nItem.GetPath().IsEmpty())
+    {
+        item.Reset();
+        item.SetPath(nItem.GetPath());
+    }
   }
+
+  PlayMovie(&item);
+
   return true;
 }
 
