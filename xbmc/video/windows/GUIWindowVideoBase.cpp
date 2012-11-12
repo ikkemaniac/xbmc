@@ -1357,6 +1357,19 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
 
   if(g_guiSettings.GetBool("videolibrary.checkpreviousepisodenotwatched"))
   {
+      bool bCanceled = false;
+      // user YesNo dialog box, do we want to use the first unseen episode or not?
+      if (CGUIDialogYesNo::ShowAndGetInput(20459,20459,20459,20022,bCanceled))
+      {
+        CLog::Log(LOGDEBUG, "%s : user yes", __FUNCTION__);
+      }
+      else
+      {
+        if (!bCanceled)
+        {
+          CLog::Log(LOGDEBUG, "%s : user no", __FUNCTION__);
+        }
+      }
     // get not watched episodes
     CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
 
