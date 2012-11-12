@@ -1039,6 +1039,9 @@ int CVideoDatabase::AddEpisode(int idShow, const CStdString& strFilenameAndPath)
       return -1;
 
     CStdString strSQL=PrepareSQL("insert into episode (idEpisode, idFile) values (NULL, %i)", idFile);
+
+    CLog::Log(LOGDEBUG, "%s : strSQL == %s", __FUNCTION__, strSQL.c_str());
+
     m_pDS->exec(strSQL.c_str());
     int idEpisode = (int)m_pDS->lastinsertid();
 
@@ -1931,6 +1934,9 @@ int CVideoDatabase::SetDetailsForEpisode(const CStdString& strFilenameAndPath, c
     // and insert the new row
     CStdString sql = "update episode set " + GetValueString(details, VIDEODB_ID_EPISODE_MIN, VIDEODB_ID_EPISODE_MAX, DbEpisodeOffsets);
     sql += PrepareSQL("where idEpisode=%i", idEpisode);
+
+    CLog::Log(LOGDEBUG, "%s : strSQL == %s", __FUNCTION__, sql.c_str());
+
     m_pDS->exec(sql.c_str());
     CommitTransaction();
 
