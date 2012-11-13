@@ -202,6 +202,7 @@ bool CVideoDatabase::CreateTables()
       if ( i == VIDEODB_ID_EPISODE_SEASON || i == VIDEODB_ID_EPISODE_EPISODE || i == VIDEODB_ID_EPISODE_BOOKMARK)
         column.Format(",c%02d varchar(24)", i);
       else
+        // why as text? columns are defined as INT in 'SDbTableOffsets DbEpisodeOffsets'
         column.Format(",c%02d text", i);
 
       columns += column;
@@ -1201,6 +1202,9 @@ int CVideoDatabase::AddEpisode(int idShow, const CStdString& strFilenameAndPath)
     UpdateFileDateAdded(idFile, strFilenameAndPath);
 
     CStdString strSQL=PrepareSQL("insert into episode (idEpisode, idFile, idShow) values (NULL, %i, %i)", idFile, idShow);
+
+    CLog::Log(LOGDEBUG, "%s : strSQL == %s", __FUNCTION__, strSQL.c_str());
+
     m_pDS->exec(strSQL.c_str());
     return (int)m_pDS->lastinsertid();
   }
@@ -2187,6 +2191,9 @@ int CVideoDatabase::SetDetailsForEpisode(const CStdString& strFilenameAndPath, c
     // and insert the new row
     CStdString sql = "update episode set " + GetValueString(details, VIDEODB_ID_EPISODE_MIN, VIDEODB_ID_EPISODE_MAX, DbEpisodeOffsets);
     sql += PrepareSQL(" where idEpisode=%i", idEpisode);
+
+    CLog::Log(LOGDEBUG, "%s : strSQL == %s", __FUNCTION__, sql.c_str());
+
     m_pDS->exec(sql.c_str());
     CommitTransaction();
 
@@ -3468,6 +3475,7 @@ void CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
                         */
     // select unwatched
     // filter on older seasons, this season but with older episodes, not played yet
+    // need to cast as INT because the column type is VARCHAR... why? column is defined as INT in 'SDbTableOffsets DbEpisodeOffsets'
     CStdString strSQL = PrepareSQL("select tvshowlinkepisode.* from tvshowlinkepisode JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode JOIN files ON episode.idFile = files.idFile where tvshowlinkepisode.idShow = %i and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) and (playCount <1 or playCount isNull) order by CAST (episode.c%02d as INT) desc, CAST (episode.c%02d as INT) desc limit 2", pItem->GetVideoInfoTag()->m_iIdShow, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode, VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
 
     CLog::Log(LOGDEBUG, "%s strSQL: %s", __FUNCTION__, strSQL.c_str());
