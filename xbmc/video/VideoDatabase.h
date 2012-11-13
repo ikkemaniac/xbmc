@@ -689,7 +689,7 @@ public:
 
   virtual bool GetFilter(CDbUrl &videoUrl, Filter &filter, SortDescription &sorting);
 
-  void GetPreviousEpisodeNotWatched(CFileItemPtr& pItem);
+  CFileItem GetPreviousEpisodeNotWatched(CFileItemPtr& pItem);
 
 protected:
   friend class CEdenVideoArtUpdater;
