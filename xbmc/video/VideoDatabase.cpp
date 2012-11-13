@@ -3458,7 +3458,7 @@ CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
                         from episodeview
                         where idShow = %i
                         and (c%02d < %i or (c%02d = %i and c%02d < %i))
-                        and (playCount <1 or playCount isNull) 
+                        and (playCount <1 or playCount isNull)
                         order by CAST (c%02d as INT) asc, CAST (c%02d as INT) asc
                         limit 1",
                         VIDEODB_ID_EPISODE_BASEPATH,
@@ -3495,7 +3495,7 @@ CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
     }
     //close dataset
     m_pDS->close();
-    
+
     bool bIsFolder = false;
     CFileItem item(strPath, bIsFolder);
 
