@@ -1559,27 +1559,25 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
     }
   } else {
 
-      //look for unwatched episodes before starting to watch this one
-      CFileItemList items;
-      CVideoDatabase db;
-      // open db connection
-      db.Open();
+    if(g_guiSettings.GetBool("videolibrary.checkpreviousepisodenotwatched"))
+    {
+        // get not watched episodes
+        CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
 
-      // get not watched episodes
-      CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
+        //close db
+        db.Close();
 
-      //close db
-      db.Close();
-
-      //play item
-      //TODO: make option to ask user for confirmation, add on/off option to settings menu
-      if(!nItem.GetPath().IsEmpty())
-      {
-          PlayMovie(&nItem);
-      } else {
-          PlayMovie(&item);
-      }
+        //play item
+        //TODO: make option to ask user for confirmation
+        if(!nItem.GetPath().IsEmpty())
+        {
+            item.Reset();
+            item.SetPath(nItem.GetPath());
+        }
+    }
   }
+
+  PlayMovie(&item);
 
   return true;
 }
