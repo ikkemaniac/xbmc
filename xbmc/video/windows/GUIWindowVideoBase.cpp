@@ -1368,7 +1368,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
     {
       bool bCanceled = false;
       // user YesNo dialog box, do we want to use the first unseen episode or not?
-      if (CGUIDialogYesNo::ShowAndGetInput(20459,20459,20459,20022,bCanceled))
+      if (CGUIDialogYesNo::ShowAndGetInput(20460,20461,20022,20022,bCanceled))
       {
         // user accepted, update item with new episode to play
         CLog::Log(LOGDEBUG, "%s : user 'yes'", __FUNCTION__);

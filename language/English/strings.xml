@@ -1906,6 +1906,8 @@
   <string id="20457">Movie set</string>
   <string id="20458">Group movies in sets</string>
   <string id="20459">Check for previous unwatched episodes</string>
+  <string id="20460">Unwatched episodes found</string>
+  <string id="20461">Do you want to play the first unwatched episode?</string>
   <!-- up to 21329 is reserved for the video db !! !-->
 
   <string id="21330">Show hidden files and directories</string>
