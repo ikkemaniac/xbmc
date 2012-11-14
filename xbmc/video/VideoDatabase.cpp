@@ -3001,15 +3001,12 @@ void CVideoDatabase::GetCommonDetails(auto_ptr<Dataset> &pDS, CVideoInfoTag &det
 // Get tvshow's previously broadcasted unwatched episodes
 CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
 {
-    /*
-    CStdString strSQL = PrepareSQL("select episode.c%02d, tvshowlinkepisode.*
-                        from tvshowlinkepisode 
-                        JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode  
-                        JOIN files ON episode.idFile = files.idFile 
-                        where tvshowlinkepisode.idShow = %i 
-                        and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) 
-                        and (playCount <1 or playCount isNull) 
-                        order by CAST (episode.c%02d as INT) asc, CAST (episode.c%02d as INT) asc
+/*    CStdString strSQL = PrepareSQL("select episodeview.c%02d
+                        from episodeview
+                        where idShow = %i
+                        and (c%02d < %i or (c%02d = %i and c%02d < %i))
+                        and (playCount <1 or playCount isNull)
+                        order by CAST (c%02d as INT) asc, CAST (c%02d as INT) asc
                         limit 1",
                         VIDEODB_ID_EPISODE_BASEPATH,
                         pItem->GetVideoInfoTag()->m_iIdShow,
@@ -3025,7 +3022,12 @@ CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
     // select unwatched
     // filter on older seasons, this season but with older episodes, not played yet
     // need to cast as INT because the column type is VARCHAR... why? column is defined as INT in 'SDbTableOffsets DbEpisodeOffsets'
-    CStdString strSQL = PrepareSQL("select episode.c%02d, tvshowlinkepisode.* from tvshowlinkepisode JOIN episode ON tvshowlinkepisode.idEpisode = episode.idEpisode JOIN files ON episode.idFile = files.idFile where tvshowlinkepisode.idShow = %i and (episode.c%02d < %i or (episode.c%02d = %i and episode.c%02d < %i)) and (playCount <1 or playCount isNull) order by CAST (episode.c%02d as INT) asc, CAST (episode.c%02d as INT) asc limit 1", VIDEODB_ID_EPISODE_BASEPATH, pItem->GetVideoInfoTag()->m_iIdShow, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode, VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
+    CStdString strSQL = PrepareSQL("select episodeview.c%02d from episodeview", VIDEODB_ID_EPISODE_BASEPATH);
+    strSQL += PrepareSQL(" where idShow = %i", pItem->GetVideoInfoTag()->m_iIdShow);
+    strSQL += PrepareSQL(" and (c%02d < %i or (c%02d = %i and c%02d < %i))", VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode);
+    strSQL += PrepareSQL(" and (playCount <1 or playCount isNull) ");
+    strSQL += PrepareSQL(" order by CAST (c%02d as INT) asc, CAST (c%02d as INT) asc", VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
+    strSQL += PrepareSQL(" limit 1");
 
     CLog::Log(LOGDEBUG, "%s strSQL: %s", __FUNCTION__, strSQL.c_str());
 
@@ -3035,7 +3037,7 @@ CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
     // if there are rows returned
     if (!m_pDS->eof())
     {
-        strPath = m_pDS->fv(PrepareSQL("episode.c%02d",VIDEODB_ID_EPISODE_BASEPATH)).get_asString();
+        strPath = m_pDS->fv(PrepareSQL("episodeview.c%02d",VIDEODB_ID_EPISODE_BASEPATH)).get_asString();
         CLog::Log(LOGDEBUG, "%s : First unseen episode = %s", __FUNCTION__, strPath.c_str());
 
     //no rows returned
