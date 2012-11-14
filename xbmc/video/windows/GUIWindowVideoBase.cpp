@@ -1357,34 +1357,40 @@ bool CGUIWindowVideoBase::OnPlayMedia(int iItem)
 
   if(g_guiSettings.GetBool("videolibrary.checkpreviousepisodenotwatched"))
   {
-      bool bCanceled = false;
-      // user YesNo dialog box, do we want to use the first unseen episode or not?
-      if (CGUIDialogYesNo::ShowAndGetInput(20459,20459,20459,20022,bCanceled))
-      {
-        CLog::Log(LOGDEBUG, "%s : user yes", __FUNCTION__);
-      }
-      else
-      {
-        if (!bCanceled)
-        {
-          CLog::Log(LOGDEBUG, "%s : user no", __FUNCTION__);
-        }
-      }
     // get not watched episodes
     CFileItem nItem(db.GetPreviousEpisodeNotWatched(pItem).GetPath(),false);
 
     //close db
     db.Close();
 
-    //play item
-    //TODO: make option to ask user for confirmation
+    //if an item is found
     if(!nItem.GetPath().IsEmpty())
     {
+      bool bCanceled = false;
+      // user YesNo dialog box, do we want to use the first unseen episode or not?
+      if (CGUIDialogYesNo::ShowAndGetInput(20459,20459,20459,20022,bCanceled))
+      {
+        // user accepted, update item with new episode to play
+        CLog::Log(LOGDEBUG, "%s : user 'yes'", __FUNCTION__);
         item.Reset();
         item.SetPath(nItem.GetPath());
+      }
+      else
+      {
+        if (bCanceled)
+        {
+            // user canceled, do nothing
+            CLog::Log(LOGDEBUG,"%s : user canceled", __FUNCTION__);
+            return true; //or should I return false?
+        } else {
+            // user declined, don't change the item
+            CLog::Log(LOGDEBUG, "%s : user 'no'", __FUNCTION__);
+        }
+      }
     }
   }
 
+  //play item
   PlayMovie(&item);
 
   return true;
