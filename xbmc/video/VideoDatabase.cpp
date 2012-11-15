@@ -3001,30 +3001,12 @@ void CVideoDatabase::GetCommonDetails(auto_ptr<Dataset> &pDS, CVideoInfoTag &det
 // Get tvshow's previously broadcasted unwatched episodes
 CFileItem CVideoDatabase::GetPreviousEpisodeNotWatched(CFileItemPtr& pItem)
 {
-/*    CStdString strSQL = PrepareSQL("select episodeview.c%02d
-                        from episodeview
-                        where idShow = %i
-                        and (c%02d < %i or (c%02d = %i and c%02d < %i))
-                        and (playCount <1 or playCount isNull)
-                        order by CAST (c%02d as INT) asc, CAST (c%02d as INT) asc
-                        limit 1",
-                        VIDEODB_ID_EPISODE_BASEPATH,
-                        pItem->GetVideoInfoTag()->m_iIdShow,
-                        VIDEODB_ID_EPISODE_SEASON,
-                        pItem->GetVideoInfoTag()->m_iSeason,
-                        VIDEODB_ID_EPISODE_SEASON,
-                        pItem->GetVideoInfoTag()->m_iSeason,
-                        VIDEODB_ID_EPISODE_EPISODE,
-                        pItem->GetVideoInfoTag()->m_iEpisode,
-                        VIDEODB_ID_EPISODE_SEASON,
-                        VIDEODB_ID_EPISODE_EPISODE);
-                        */
     // select unwatched
     // filter on older seasons, this season but with older episodes, not played yet
     // need to cast as INT because the column type is VARCHAR... why? column is defined as INT in 'SDbTableOffsets DbEpisodeOffsets'
     CStdString strSQL = PrepareSQL("select episodeview.c%02d from episodeview", VIDEODB_ID_EPISODE_BASEPATH);
     strSQL += PrepareSQL(" where idShow = %i", pItem->GetVideoInfoTag()->m_iIdShow);
-    strSQL += PrepareSQL(" and (c%02d < %i or (c%02d = %i and c%02d < %i))", VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode);
+    strSQL += PrepareSQL(" and (CAST (c%02d as INT) < %i or (CAST (c%02d as INT) = %i and CAST (c%02d as INT) < %i))", VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_SEASON, pItem->GetVideoInfoTag()->m_iSeason, VIDEODB_ID_EPISODE_EPISODE, pItem->GetVideoInfoTag()->m_iEpisode);
     strSQL += PrepareSQL(" and (playCount <1 or playCount isNull) ");
     strSQL += PrepareSQL(" order by CAST (c%02d as INT) asc, CAST (c%02d as INT) asc", VIDEODB_ID_EPISODE_SEASON, VIDEODB_ID_EPISODE_EPISODE);
     strSQL += PrepareSQL(" limit 1");
