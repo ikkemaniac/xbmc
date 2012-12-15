@@ -972,7 +972,7 @@ bool CApplication::InitDirectoriesLinux()
       CUtil::GetHomePath(xbmcPath);
       if (!CFile::Exists(URIUtils::AddFileToFolder(xbmcPath, "language")))
       {
-        fprintf(stderr, "Unable to find path to XBMC data files!\n");
+        fprintf(stderr, xbmcPath + ": Unable to find path to XBMC data files!\n");
         exit(1);
       }
     }
