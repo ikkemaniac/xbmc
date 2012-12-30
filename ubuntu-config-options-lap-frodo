@@ -1,0 +1,1 @@
+./configure --host=i686-linux-gnu --build=i686-linux-gnu --enable-optimizations --enable-nfs --disable-non-free

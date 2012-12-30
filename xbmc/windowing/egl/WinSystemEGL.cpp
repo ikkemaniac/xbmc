@@ -372,7 +372,7 @@ bool CWinSystemEGL::IsExtSupported(const char* extension)
   name += extension;
   name += " ";
 
-  return m_extensions.find(name) != std::string::npos;
+  return (m_extensions.find(name) != std::string::npos || CRenderSystemGLES::IsExtSupported(extension));
 }
 
 bool CWinSystemEGL::PresentRenderImpl(const CDirtyRegionList &dirty)
@@ -383,7 +383,8 @@ bool CWinSystemEGL::PresentRenderImpl(const CDirtyRegionList &dirty)
 
 void CWinSystemEGL::SetVSyncImpl(bool enable)
 {
-  if (!m_egl->SetVSync(m_display, enable))
+  m_iVSyncMode = enable;
+  if (!m_egl->SetVSync(m_display, m_iVSyncMode))
     CLog::Log(LOGERROR, "%s,Could not set egl vsync", __FUNCTION__);
 }
 

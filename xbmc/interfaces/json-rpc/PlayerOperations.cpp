@@ -37,6 +37,7 @@
 #include "filesystem/File.h"
 #include "PartyModeManager.h"
 #include "epg/EpgInfoTag.h"
+#include "music/MusicDatabase.h"
 #include "pvr/PVRManager.h"
 #include "pvr/channels/PVRChannel.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
@@ -106,51 +107,57 @@ JSONRPC_STATUS CPlayerOperations::GetItem(const CStdString &method, ITransportLa
     case Video:
     case Audio:
     {
-      if (g_application.CurrentFileItem().GetLabel().empty())
+      fileItem = CFileItemPtr(new CFileItem(g_application.CurrentFileItem()));
+      if (fileItem->GetLabel().empty())
       {
-        CFileItem tmpItem = g_application.CurrentFileItem();
         if (IsPVRChannel())
         {
           CPVRChannelPtr currentChannel;
-          if (g_PVRManager.GetCurrentChannel(currentChannel))
-            tmpItem = CFileItem(*currentChannel.get());
+          if (g_PVRManager.GetCurrentChannel(currentChannel) && currentChannel.get() != NULL)
+            fileItem = CFileItemPtr(new CFileItem(*currentChannel.get()));
         }
         else if (player == Video)
         {
-          if (!CVideoLibrary::FillFileItem(g_application.CurrentFile(), tmpItem))
+          if (!CVideoLibrary::FillFileItem(g_application.CurrentFile(), fileItem, parameterObject))
           {
-            tmpItem = CFileItem(*g_infoManager.GetCurrentMovieTag());
-            tmpItem.SetPath(g_application.CurrentFileItem().GetPath());
+            const CVideoInfoTag *currentVideoTag = g_infoManager.GetCurrentMovieTag();
+            if (currentVideoTag != NULL)
+              fileItem = CFileItemPtr(new CFileItem(*currentVideoTag));
+            fileItem->SetPath(g_application.CurrentFileItem().GetPath());
           }
         }
         else
         {
-          if (!CAudioLibrary::FillFileItem(g_application.CurrentFile(), tmpItem))
+          if (!CAudioLibrary::FillFileItem(g_application.CurrentFile(), fileItem, parameterObject))
           {
-            tmpItem = CFileItem(*g_infoManager.GetCurrentSongTag());
-            tmpItem.SetPath(g_application.CurrentFileItem().GetPath());
+            const MUSIC_INFO::CMusicInfoTag *currentMusicTag = g_infoManager.GetCurrentSongTag();
+            if (currentMusicTag != NULL)
+              fileItem = CFileItemPtr(new CFileItem(*currentMusicTag));
+            fileItem->SetPath(g_application.CurrentFileItem().GetPath());
           }
         }
-
-        fileItem = CFileItemPtr(new CFileItem(tmpItem));
       }
-      else
-        fileItem = CFileItemPtr(new CFileItem(g_application.CurrentFileItem()));
 
-      if (player == Video && !IsPVRChannel())
+      if (IsPVRChannel())
+        break;
+
+      if (player == Video)
       {
         bool additionalInfo = false;
+        bool streamdetails = false;
         for (CVariant::const_iterator_array itr = parameterObject["properties"].begin_array(); itr != parameterObject["properties"].end_array(); itr++)
         {
           CStdString fieldValue = itr->asString();
-          if (fieldValue == "cast" || fieldValue == "set" || fieldValue == "setid" || fieldValue == "showlink" || fieldValue == "resume")
+          if (fieldValue == "cast" || fieldValue == "set" || fieldValue == "setid" || fieldValue == "showlink" || fieldValue == "resume" ||
+             (fieldValue == "streamdetails" && !fileItem->GetVideoInfoTag()->m_streamDetails.HasItems()))
             additionalInfo = true;
         }
 
-        if (additionalInfo)
+        CVideoDatabase videodatabase;
+        if ((additionalInfo) &&
+            videodatabase.Open())
         {
-          CVideoDatabase videodatabase;
-          if (videodatabase.Open())
+          if (additionalInfo)
           {
             switch (fileItem->GetVideoContentType())
             {
@@ -171,9 +178,19 @@ JSONRPC_STATUS CPlayerOperations::GetItem(const CStdString &method, ITransportLa
               default:
                 break;
             }
-
-            videodatabase.Close();
           }
+
+          videodatabase.Close();
+        }
+      }
+      else if (player == Audio)
+      {
+        if (fileItem->IsMusicDb())
+        {
+          CMusicDatabase musicdb;
+          CFileItemList items;
+          items.Add(fileItem);
+          CAudioLibrary::GetAdditionalSongDetails(parameterObject, items, musicdb);
         }
       }
       break;

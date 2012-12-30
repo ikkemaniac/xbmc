@@ -2578,6 +2578,9 @@
     <ClCompile Include="..\..\xbmc\utils\DatabaseUtils.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\karaoke\karaokevideobackground.cpp">
+      <Filter>music\karaoke</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\filesystem\VideoDatabaseDirectory\DirectoryNodeTags.cpp">
       <Filter>filesystem\VideoDatabaseDirectory</Filter>
     </ClCompile>
@@ -2944,6 +2947,15 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\GroupUtils.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\AudioEngine\Utils\AELimiter.cpp">
+      <Filter>cores\AudioEngine\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\utils\test\TestUrlOptions.cpp">
+      <Filter>utils\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\interfaces\python\PyContext.cpp">
+      <Filter>interfaces\python</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5754,6 +5766,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\GroupUtils.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\AudioEngine\Utils\AELimiter.h">
+      <Filter>cores\AudioEngine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\interfaces\python\PyContext.h">
+      <Filter>interfaces\python</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

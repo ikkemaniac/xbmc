@@ -5,7 +5,7 @@ XBMC_ADDONSDIR=../../../../addons
 
 # lib name, version
 LIBNAME=xbmc-pvr-addons
-VERSION=ef09a31abc3e67778d91583dd05ce8455865b2d6
+VERSION=0482a89a81f3f3de8f61ac620abcd79c116e8a9d
 SOURCE=$(LIBNAME)-$(VERSION)
 ARCHIVE=$(SOURCE).tar.gz
 
